@@ -1,6 +1,26 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import { AppProps } from 'next/app';
+import { RecoilRoot } from 'recoil';
+import '../styles/globals.css';
+import { SessionProvider } from 'next-auth/react';
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
+const theme = extendTheme({
+  fonts: {
+    heading: `'Jua', sans-serif`,
+    body: `'Jua', sans-serif`,
+  },
+});
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <ChakraProvider theme={theme}>
+      <RecoilRoot>
+        <SessionProvider session={pageProps.session}>
+          <Component {...pageProps} />
+        </SessionProvider>
+      </RecoilRoot>
+    </ChakraProvider>
+  );
 }
+
+export default MyApp;
