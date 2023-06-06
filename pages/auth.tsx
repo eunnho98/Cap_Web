@@ -35,13 +35,12 @@ const props = {
 const text = 'Welcome To \n YoKHURoute!';
 
 function auth() {
-  const { status, data } = useSession();
+  const { status } = useSession();
   const [authMode, setAuthMode] = useState<string>('login');
   const [hide, setHide] = useState<boolean>(true);
   const [checkHide, setCheckHide] = useState<boolean>(true);
   const { control, watch, setValue } = useForm<IForm>();
   const [valid, setValid] = useState(false);
-  const router = useRouter();
   const toast = useToast();
   const onClick = (e: any) => {
     setAuthMode(e.target.value);
