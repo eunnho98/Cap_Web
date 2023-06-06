@@ -164,6 +164,11 @@ function auth() {
         <br />
         구글로 이용해주세요.
       </Text>
+      <Text mt="24px" textAlign="center" color="gray.400" fontSize="18px">
+        로그인에 문제가 있다면
+        <br />
+        쿠키를 지워보세요!
+      </Text>
     </Box>
   );
 }
