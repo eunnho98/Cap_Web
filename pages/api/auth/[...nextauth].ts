@@ -10,6 +10,7 @@ const nextAuthOptions = (): NextAuthOptions => {
         clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET || '',
       }),
     ],
+    secret: 'HelloWorld',
   };
 };
 
