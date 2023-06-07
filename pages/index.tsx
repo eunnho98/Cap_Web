@@ -1,10 +1,20 @@
 import { Button, Heading, SlideFade, VStack } from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function home() {
   const [shade, setShade] = useState(false);
   const router = useRouter();
+  const { status } = useSession();
+
+  useEffect(() => {
+    console.log(status);
+  }, [status]);
+
+  if (status === 'authenticated') {
+    router.push('/login');
+  }
 
   return (
     <VStack p="200px 40px" gap={4}>
