@@ -227,7 +227,7 @@ function userInfo() {
 
   const onClickInfo = () => {
     toast({
-      title: '구글로 로그인하였습니다. \n정보 수정이 불가능합니다.',
+      title: '카카오로 로그인하였습니다. \n정보 수정이 불가능합니다.',
       status: 'error',
       duration: 4000,
       isClosable: true,

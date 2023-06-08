@@ -172,7 +172,7 @@ function auth() {
       <Text mt="48px" textAlign="center" color="gray.400" fontSize="18px">
         현재 일반 로그인은 지원하지 않습니다 :(
         <br />
-        구글로 이용해주세요.
+        카카오로 이용해주세요.
       </Text>
       <Text mt="24px" textAlign="center" color="gray.400" fontSize="18px">
         로그인에 문제가 있다면
