@@ -152,25 +152,22 @@ function auth() {
       </Button>
       <Button
         w="100%"
-        colorScheme="messenger"
+        bgColor="#FEE500"
+        _hover={{
+          bgColor: 'yellow.500',
+        }}
+        _active={{
+          bgColor: 'yellow.500',
+        }}
         mt="18px"
         onClick={() =>
-          signIn('google', {
+          signIn('kakao', {
             callbackUrl: '/login',
           })
         }
         letterSpacing="1px"
       >
-        구글로 시작하기
-      </Button>
-      <Button
-        onClick={() => {
-          signIn('kakao', {
-            callbackUrl: '/login',
-          });
-        }}
-      >
-        카카오로 시작
+        카카오로 시작하기
       </Button>
       <Text mt="48px" textAlign="center" color="gray.400" fontSize="18px">
         현재 일반 로그인은 지원하지 않습니다 :(
