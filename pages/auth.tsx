@@ -35,7 +35,7 @@ const props = {
 const text = 'Welcome To \n YoKHURoute!';
 
 function auth() {
-  const { status } = useSession();
+  const { status, data } = useSession();
   const [authMode, setAuthMode] = useState<string>('login');
   const [hide, setHide] = useState<boolean>(true);
   const [checkHide, setCheckHide] = useState<boolean>(true);
@@ -57,6 +57,10 @@ function auth() {
       isClosable: true,
     });
   };
+
+  useEffect(() => {
+    console.log(data);
+  });
 
   useEffect(() => {
     if (authMode === 'login') {
@@ -158,6 +162,15 @@ function auth() {
         letterSpacing="1px"
       >
         구글로 시작하기
+      </Button>
+      <Button
+        onClick={() => {
+          signIn('kakao', {
+            callbackUrl: '/login',
+          });
+        }}
+      >
+        카카오로 시작
       </Button>
       <Text mt="48px" textAlign="center" color="gray.400" fontSize="18px">
         현재 일반 로그인은 지원하지 않습니다 :(
