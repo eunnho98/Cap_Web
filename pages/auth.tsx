@@ -51,7 +51,7 @@ function auth() {
 
   const onLogin = () => {
     toast({
-      title: '현재 지원하지 않습니다. \n구글로 이용해주세요!',
+      title: '현재 지원하지 않습니다. \n카카오로 이용해주세요!',
       status: 'error',
       duration: 4000,
       isClosable: true,
