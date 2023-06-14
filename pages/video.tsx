@@ -318,7 +318,15 @@ function video() {
                     <ModalHeader>{callName}님께 화상통화를 걸까요?</ModalHeader>
                     <ModalCloseButton />
                     <ModalFooter gap={2}>
-                      <Button onClick={() => {}}>네</Button>
+                      <Button
+                        onClick={() => {
+                          if (callName) {
+                            startPeerConnection(callName);
+                          }
+                        }}
+                      >
+                        네
+                      </Button>
                       <Button
                         onClick={modalDisclosure.onClose}
                         colorScheme="orange"
