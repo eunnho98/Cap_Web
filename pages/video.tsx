@@ -36,6 +36,7 @@ function video() {
   const [trigger, setTrigger] = useState(0);
   const modalDisclosure = useDisclosure();
   const [callName, setCallName] = useState<string>();
+  const [callEmail, setCallEmail] = useState<string>();
 
   function checkConnected() {
     if (
@@ -303,6 +304,7 @@ function video() {
                     onClick={() => {
                       modalDisclosure.onOpen();
                       setCallName(name);
+                      setCallEmail(friendEmailList[i]);
                     }}
                   />
                 </HStack>
@@ -320,8 +322,8 @@ function video() {
                     <ModalFooter gap={2}>
                       <Button
                         onClick={() => {
-                          if (callName) {
-                            startPeerConnection(callName);
+                          if (callEmail) {
+                            startPeerConnection(callEmail);
                           }
                         }}
                       >
