@@ -37,11 +37,14 @@ function video() {
   const modalDisclosure = useDisclosure();
   const [callName, setCallName] = useState<string>();
   const [callEmail, setCallEmail] = useState<string>();
+  const [con, setCon] = useState<RTCPeerConnection>();
 
   function checkConnected() {
     if (
-      yourConnection === undefined ||
-      yourConnection.connectionState !== 'connected'
+      // yourConnection === undefined ||
+      // yourConnection.connectionState !== 'connected'
+      con === undefined ||
+      con.connectionState !== 'connected'
     ) {
       return false;
     }
@@ -52,47 +55,76 @@ function video() {
     if (success === false) {
       console.log('이메일 중복');
     } else {
+      console.log('시작');
       startConnetion();
     }
   }
 
   function onOffer(offer: RTCSessionDescription, name: any) {
     connectedUser = name;
-    yourConnection.setRemoteDescription(new RTCSessionDescription(offer));
-    yourConnection
-      .createAnswer()
-      .then((answer) => {
-        yourConnection.setLocalDescription(answer);
-        _send({
-          type: 'answer',
-          answer: answer,
+    if (con) {
+      con.setRemoteDescription(new RTCSessionDescription(offer));
+      con
+        .createAnswer()
+        .then((answer) => {
+          con.setLocalDescription(answer);
+          _send({
+            type: 'answer',
+            answer: answer,
+          });
+        })
+        .catch((error) => {
+          alert('An error has occurred.');
         });
-      })
-      .catch((error) => {
-        alert('An error has occurred.');
-      });
+    }
+    // yourConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    // yourConnection
+    //   .createAnswer()
+    //   .then((answer) => {
+    //     yourConnection.setLocalDescription(answer);
+    //     _send({
+    //       type: 'answer',
+    //       answer: answer,
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     alert('An error has occurred.');
+    //   });
   }
 
   async function onAnswer(answer: RTCSessionDescription) {
-    await yourConnection.setRemoteDescription(
-      new RTCSessionDescription(answer),
-    );
+    // await yourConnection.setRemoteDescription(
+    if (con) {
+      await con.setRemoteDescription(new RTCSessionDescription(answer));
+    }
   }
 
   function onCandidate(candidate: any) {
-    yourConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    if (con) {
+      con.addIceCandidate(new RTCIceCandidate(candidate));
+    }
+    // yourConnection.addIceCandidate(new RTCIceCandidate(candidate));
   }
 
   function onLeave() {
     connectedUser = null;
     theirs.current!.srcObject = null;
 
-    yourConnection.close();
+    if (con) {
+      con.close();
 
-    yourConnection.onicecandidate = null;
-    yourConnection.ontrack = null;
+      con.onicecandidate = null;
+      con.ontrack = null;
 
-    setupPeerConnection(stream);
+      setupPeerConnection(stream);
+    }
+
+    // yourConnection.close();
+
+    // yourConnection.onicecandidate = null;
+    // yourConnection.ontrack = null;
+
+    // setupPeerConnection(stream);
   }
 
   function _send(message: any) {
@@ -100,7 +132,9 @@ function video() {
       message.name = connectedUser;
     }
 
-    socket.send(JSON.stringify(message));
+    if (socket) {
+      socket.send(JSON.stringify(message));
+    }
   }
 
   function startConnetion() {
@@ -129,43 +163,88 @@ function video() {
         },
       ],
     };
-    yourConnection = new RTCPeerConnection(config);
+    // yourConnection = new RTCPeerConnection(config);
+    setCon(new RTCPeerConnection(config));
+    //!
+    if (con) {
+      con.onicecandidate = (event) => {
+        if (event.candidate) {
+          _send({
+            type: 'candidate',
+            candidate: event.candidate,
+          });
+        }
+      };
 
-    yourConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        _send({
-          type: 'candidate',
-          candidate: event.candidate,
-        });
-      }
-    };
+      con.addTrack(stream.getTracks()[0]);
+      con.ontrack = (event) => {
+        const remoteMediaStream = new MediaStream();
+        remoteMediaStream.addTrack(event.track);
+        if (theirs.current) {
+          theirs.current.srcObject = remoteMediaStream;
+        }
+      };
+    }
+    // yourConnection.onicecandidate = (event) => {
+    //   if (event.candidate) {
+    //     _send({
+    //       type: 'candidate',
+    //       candidate: event.candidate,
+    //     });
+    //   }
+    // };
 
-    yourConnection.addTrack(stream.getTracks()[0]);
-    yourConnection.ontrack = (event) => {
-      const remoteMediaStream = new MediaStream();
-      remoteMediaStream.addTrack(event.track);
-      if (theirs.current) {
-        theirs.current.srcObject = remoteMediaStream;
-      }
-    };
+    // yourConnection.addTrack(stream.getTracks()[0]);
+    // yourConnection.ontrack = (event) => {
+    //   const remoteMediaStream = new MediaStream();
+    //   remoteMediaStream.addTrack(event.track);
+    //   if (theirs.current) {
+    //     theirs.current.srcObject = remoteMediaStream;
+    //   }
+    // };
   };
 
   const startPeerConnection = (user: string) => {
     connectedUser = user;
 
-    yourConnection
-      .createOffer()
-      .then((offer) => {
-        _send({
-          type: 'offer',
-          offer: offer,
+    if (con) {
+      console.log('yuo', con);
+      con
+        .createOffer()
+        .then((offer) => {
+          console.log('offer', offer);
+          _send({
+            type: 'offer',
+            offer: offer,
+          });
+          console.log('sending offer to Remote,', offer);
+          con.setLocalDescription(offer);
+        })
+        .catch((error) => {
+          console.log(error);
         });
-        console.log('sending offer to Remote,', offer);
-        yourConnection.setLocalDescription(offer);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    } else {
+      console.log('sdf');
+    }
+
+    // if (yourConnection) {
+    //   console.log('yuo', yourConnection);
+    //   yourConnection
+    //     .createOffer()
+    //     .then((offer) => {
+    //       _send({
+    //         type: 'offer',
+    //         offer: offer,
+    //       });
+    //       console.log('sending offer to Remote,', offer);
+    //       yourConnection.setLocalDescription(offer);
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // } else {
+    //   console.log('sdf');
+    // }
   };
 
   const onClickTrigger = () => {
@@ -322,7 +401,9 @@ function video() {
                     <ModalFooter gap={2}>
                       <Button
                         onClick={() => {
+                          console.log('ca', callEmail);
                           if (callEmail) {
+                            console.log(callEmail);
                             startPeerConnection(callEmail);
                           }
                         }}
