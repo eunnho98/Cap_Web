@@ -9,6 +9,13 @@ import {
   Card,
   CardHeader,
   CardBody,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalCloseButton,
+  ModalFooter,
+  ModalContent,
+  ModalHeader,
 } from '@chakra-ui/react';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState, useRef } from 'react';
@@ -27,6 +34,18 @@ function video() {
   const [friendEmailList, setFriendEmailList] = useState<string[]>([]);
   const [friendImageList, setFriendImageList] = useState<string[]>([]);
   const [trigger, setTrigger] = useState(0);
+  const modalDisclosure = useDisclosure();
+  const [callName, setCallName] = useState<string>();
+
+  function checkConnected() {
+    if (
+      yourConnection === undefined ||
+      yourConnection.connectionState !== 'connected'
+    ) {
+      return false;
+    }
+    return true;
+  }
 
   function onLogin(success: boolean) {
     if (success === false) {
@@ -80,14 +99,12 @@ function video() {
       message.name = connectedUser;
     }
 
-    if (socket.OPEN) {
-      socket.send(JSON.stringify(message));
-    }
+    socket.send(JSON.stringify(message));
   }
 
   function startConnetion() {
     navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
+      .getUserMedia({ video: true, audio: false })
       .then((myStream) => {
         stream = myStream;
         if (yours.current) {
@@ -214,6 +231,14 @@ function video() {
     };
   }, [data]);
 
+  const onEndVideo = () => {
+    _send({
+      type: 'leave',
+    });
+
+    onLeave();
+  };
+
   return (
     <Box p="20px 24px" m="0 auto">
       <Box
@@ -249,7 +274,7 @@ function video() {
           }}
         />
       </Box>
-
+      {/* startPeerConnection(friendEmailList[i]); */}
       <Card
         align="center"
         w="100%"
@@ -272,9 +297,37 @@ function video() {
                     {name.length > 3 ? name.slice(0, 4) : name}
                   </Text>
                   <Text fontSize="15px">{friendEmailList[i]}</Text>
-                  <VideoCallIcon w="20px" h="32px" />
+                  <VideoCallIcon
+                    w="20px"
+                    h="32px"
+                    onClick={() => {
+                      modalDisclosure.onOpen();
+                      setCallName(name);
+                    }}
+                  />
                 </HStack>
                 <Box w="100%" h="2px" bgColor="gray.200" mt="2px" />
+                <Modal
+                  onClose={modalDisclosure.onClose}
+                  isOpen={modalDisclosure.isOpen}
+                  isCentered
+                  size="xs"
+                >
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>{callName}님께 화상통화를 걸까요?</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalFooter gap={2}>
+                      <Button onClick={() => {}}>네</Button>
+                      <Button
+                        onClick={modalDisclosure.onClose}
+                        colorScheme="orange"
+                      >
+                        아니요
+                      </Button>
+                    </ModalFooter>
+                  </ModalContent>
+                </Modal>
               </Box>
             ))}
           </VStack>
@@ -286,8 +339,10 @@ function video() {
           position="relative"
           borderRadius="100%"
           colorScheme="red"
+          onClick={onEndVideo}
           w="48px"
           h="48px"
+          isDisabled={!checkConnected()}
         >
           <EndCallIcon
             color="white"
