@@ -1,6 +1,7 @@
 import { Icon } from '@chakra-ui/react';
-import { MdEmail, MdKey } from 'react-icons/md';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { MdEmail, MdKey, MdRefresh } from 'react-icons/md';
+import { FaEye, FaEyeSlash, FaVideo } from 'react-icons/fa';
+import { BsFillCameraVideoOffFill } from 'react-icons/bs';
 
 export function EmailIcon(props: any) {
   return <Icon {...props} as={MdEmail} />;
@@ -27,4 +28,16 @@ export function CircleIcon(props: any) {
       />
     </Icon>
   );
+}
+
+export function VideoCallIcon(props: any) {
+  return <Icon {...props} as={FaVideo} />;
+}
+
+export function EndCallIcon(props: any) {
+  return <Icon {...props} as={BsFillCameraVideoOffFill} />;
+}
+
+export function RefreshIcon(props: any) {
+  return <Icon {...props} as={MdRefresh} />;
 }

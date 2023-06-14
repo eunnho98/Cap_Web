@@ -4,6 +4,7 @@ import {
   EyeCloseIcon,
   EyeIcon,
   KeyIcon,
+  VideoCallIcon,
 } from '@/Icons/icons';
 import CommonInput from '@/components/CommonInput';
 import UserList from '@/components/UserList';
@@ -50,6 +51,7 @@ import {
   getDoc,
 } from 'firebase/firestore';
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -95,6 +97,7 @@ function userInfo() {
   const [friendEmailList, setFriendEmailList] = useState<string[]>([]);
   const [friendImageList, setFriendImageList] = useState<string[]>([]);
   const [trigger, setTrigger] = useState(0);
+  const router = useRouter();
 
   const onClickTrigger = () => {
     setTrigger((prev) => prev + 1);
@@ -236,12 +239,15 @@ function userInfo() {
 
   return (
     <Box p="48px 12px">
-      <Box position="absolute" top="2px" right="4px">
+      <HStack position="absolute" top="2px" right="4px">
         <EmailIcon fontSize="34px" onClick={mailDisclosure.onOpen} />
-      </Box>
-      <Box position="absolute" top="-2px" right="2px">
-        <CircleIcon color="red.500" />
-      </Box>
+        <VideoCallIcon
+          fontSize="34px"
+          onClick={() => {
+            router.push('/video');
+          }}
+        />
+      </HStack>
       {/* Drawer */}
       <Drawer
         isOpen={mailDisclosure.isOpen}
@@ -304,7 +310,7 @@ function userInfo() {
                     <Box key={i} w="100%">
                       <HStack spacing={4}>
                         <Avatar size="sm" src={friendImageList[i]} />
-                        <Text fontSize="20px">
+                        <Text fontSize="16px">
                           {name.length > 3 ? name.slice(0, 4) : name}
                         </Text>
                         <Text fontSize="15px">{friendEmailList[i]}</Text>
